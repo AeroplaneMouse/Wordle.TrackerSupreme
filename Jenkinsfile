@@ -5,7 +5,6 @@ pipeline {
         // These are typically already available in Jenkins, but we make it explicit
         COMMIT_SHA = "${env.GIT_COMMIT}"
         BUILD_NUM  = "${env.BUILD_NUMBER}"
-        IMAGE_TAG  = ""
     }
 
     stages {
