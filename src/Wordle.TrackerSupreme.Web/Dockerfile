@@ -23,8 +23,13 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
+# copy node_modules from build
+COPY --from=build /app/node_modules ./node_modules
+
+# remove dev dependencies
+RUN npm prune --omit=dev
+
 COPY package*.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 COPY --from=build /app/build ./build
 
 EXPOSE 3000
