@@ -27,12 +27,14 @@ pipeline {
             steps {
                 script {
                     withEnv(["IMAGE_TAG=${env.IMAGE_TAG}"]) {
-                        sh """
-                            docker compose -f compose.build.yml \
-                            --profile build-app build \
-                            --build-arg COMMIT_SHA=${COMMIT_SHA} \
-                            --build-arg BUILD_NUMBER=${BUILD_NUM}
-                        """
+                        withEnv(["DOCKER_BUILDKIT=1"]) {
+                            sh """
+                                docker compose -f compose.build.yml \
+                                --profile build-app build \
+                                --build-arg COMMIT_SHA=${COMMIT_SHA} \
+                                --build-arg BUILD_NUMBER=${BUILD_NUM}
+                            """
+                        }
                     }
                 }
             }

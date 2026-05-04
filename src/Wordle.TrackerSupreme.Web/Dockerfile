@@ -12,7 +12,7 @@ ENV PUBLIC_COMMIT_URL=$REPO_URL/commit/$COMMIT_SHA
 ENV PUBLIC_BUILD_NUMBER=$BUILD_NUMBER
 
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
 RUN npm run build
@@ -24,7 +24,7 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 COPY --from=build /app/build ./build
 
 EXPOSE 3000
