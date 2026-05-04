@@ -17,14 +17,16 @@ pipeline {
 
         stage('Set image tag') {
             steps {
-                def shortHash = sh(
-                    script: "git rev-parse --short HEAD",
-                    returnStdout: true
-                ).trim()
+                script {
+                    def shortHash = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
 
-                env.IMAGE_TAG = shortHash
+                    env.IMAGE_TAG = shortHash
 
-                echo "Using IMAGE_TAG=${env.IMAGE_TAG}"
+                    echo "Using IMAGE_TAG=${env.IMAGE_TAG}"
+                }
             }
         }
 
