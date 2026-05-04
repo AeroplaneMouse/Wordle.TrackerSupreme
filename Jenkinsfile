@@ -18,13 +18,7 @@ pipeline {
         stage('Set image tag') {
             steps {
                 script {
-                    def shortHash = sh(
-                        script: "git rev-parse --short HEAD",
-                        returnStdout: true
-                    ).trim()
-
-                    env.IMAGE_TAG = shortHash
-
+                    env.IMAGE_TAG = env.GIT_COMMIT.take(7)
                     echo "Using IMAGE_TAG=${env.IMAGE_TAG}"
                 }
             }
