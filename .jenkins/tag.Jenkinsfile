@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "registry"
+        REGISTRY = "registry.trackersupreme.dk"
     }
 
     stages {
