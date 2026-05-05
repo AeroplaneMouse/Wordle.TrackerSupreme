@@ -4,7 +4,8 @@ pipeline {
     environment {
         // These are typically already available in Jenkins, but we make it explicit
         COMMIT_SHA = "${env.GIT_COMMIT}"
-        BUILD_NUM  = "${env.GIT_BRANCH}-${env.BUILD_NUMBER}"
+        BUILD_ID   = "${env.GIT_BRANCH}-${env.BUILD_NUMBER}"
+        BUILD_URL  = "${env.}" 
     }
 
     stages {
@@ -31,7 +32,8 @@ pipeline {
                             docker compose -f compose.build.yml \
                             --profile build-app build \
                             --build-arg COMMIT_SHA=${COMMIT_SHA} \
-                            --build-arg BUILD_NUMBER=${BUILD_NUM}
+                            --build-arg BUILD_NUMBER=${BUILD_ID} \
+                            --build-arg BUILD_URL=${BUILD_URL}
                         """
                     }
                 }
