@@ -5,7 +5,7 @@ pipeline {
         // These are typically already available in Jenkins, but we make it explicit
         COMMIT_SHA = "${env.GIT_COMMIT}"
         BUILD_ID   = "${env.GIT_BRANCH}-${env.BUILD_NUMBER}"
-        BUILD_URL  = "${env.}" 
+        BUILD_URL  = "${env.BUILD_URL}"
     }
 
     stages {
