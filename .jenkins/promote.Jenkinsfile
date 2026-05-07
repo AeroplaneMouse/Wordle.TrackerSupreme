@@ -25,7 +25,7 @@ pipeline {
                     echo "  To:   ${env.TARGET_TAG}"
                 }
                 script {
-                    IMAGES = [
+                    def.IMAGES = [
                         'web',
                         'api',
                         'migrator'
