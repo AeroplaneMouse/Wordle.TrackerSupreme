@@ -38,6 +38,8 @@ pipeline {
             steps {
                 script {
                     for (img in IMAGES) {
+                        def.IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}:${params.IMAGE_TAG}"
+                        echo "Validating image: ${IMAGE_PATH}"
                         sh """
                             docker manifest inspect \
                             ${REGISTRY}/wordle-trackersupreme-${img}:${params.IMAGE_TAG} \
