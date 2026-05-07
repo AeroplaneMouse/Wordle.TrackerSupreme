@@ -15,6 +15,20 @@ pipeline {
             }
         }
 
+        stage('Write build metadata') {
+            steps {
+                writeFile file: 'build.json', text: """
+                {
+                  "commit": "${env.GIT_COMMIT}",
+                  "imageTag": "${env.IMAGE_TAG}",
+                  "branch": "${env.GIT_BRANCH}",
+                  "buildNumber": "${env.BUILD_NUMBER}"
+                }
+                """
+                archiveArtifacts artifacts: 'build.json'
+            }
+        }
+
         stage('Set image tag') {
             steps {
                 script {
