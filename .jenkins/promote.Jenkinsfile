@@ -52,33 +52,39 @@ pipeline {
 
         stage('Pull Images') {
             steps {
-                for (img in IMAGES) {
-                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
-                    sh """
-                        docker pull ${IMAGE_PATH}:${params.IMAGE_TAG}
-                    """
+                script {
+                    for (img in IMAGES) {
+                        IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                        sh """
+                            docker pull ${IMAGE_PATH}:${params.IMAGE_TAG}
+                        """
+                    }
                 }
             }
         }
 
         stage('Tag Images') {
             steps {
-                for (img in IMAGES) {
-                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
-                    sh """
-                        docker tag ${IMAGE_PATH}:${params.IMAGE_TAG} ${IMAGE_PATH}:${TARGET_TAG}
-                    """
+                script {
+                    for (img in IMAGES) {
+                        IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                        sh """
+                            docker tag ${IMAGE_PATH}:${params.IMAGE_TAG} ${IMAGE_PATH}:${TARGET_TAG}
+                        """
+                    }
                 }
             }
         }
 
         stage('Push Promoted Tags') {
             steps {
-                for (img in IMAGES) {
-                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
-                    sh """
-                        docker push ${IMAGE_PATH}:${TARGET_TAG}
-                    """
+                script {
+                    for (img in IMAGES) {
+                        IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                        sh """
+                            docker push ${IMAGE_PATH}:${TARGET_TAG}
+                        """
+                    }
                 }
             }
         }
