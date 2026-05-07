@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'SHORT_HASH', description: 'Commit hash (e.g. abc1234)')
+        string(name: 'IMAGE_TAG', description: 'Docker image tag to promote')
         choice(name: 'TARGET_ENV', choices: ['QA', 'PROD'], description: 'Deployment target')
     }
 
@@ -14,15 +14,36 @@ pipeline {
         stage('Validate Input') {
             steps {
                 script {
-                    if (!params.SHORT_HASH?.trim()) {
-                        error("SHORT_HASH is required")
+                    if (!params.IMAGE_TAG?.trim()) {
+                        error("IMAGE_TAG is required")
                     }
 
                     env.TARGET_TAG = params.TARGET_ENV == 'QA' ? 'qa-latest' : 'latest'
 
                     echo "Promoting images:"
-                    echo "  From: ${params.SHORT_HASH}"
+                    echo "  From: ${params.IMAGE_TAG}"
                     echo "  To:   ${env.TARGET_TAG}"
+                }
+                script {
+                    IMAGES = [
+                        'web',
+                        'api',
+                        'migrator'
+                    ]
+                }
+            }
+        }
+
+        stage('Validate Images Exist') {
+            steps {
+                script {
+                    for (img in IMAGES) {
+                        sh """
+                            docker manifest inspect \
+                            ${REGISTRY}/wordle-trackersupreme-${img}:${params.IMAGE_TAG} \
+                            > /dev/null
+                        """
+                    }
                 }
             }
         }
@@ -30,9 +51,9 @@ pipeline {
         stage('Pull Images') {
             steps {
                 sh """
-                    docker pull ${REGISTRY}/wordle-trackersupreme-web:${params.SHORT_HASH}
-                    docker pull ${REGISTRY}/wordle-trackersupreme-api:${params.SHORT_HASH}
-                    docker pull ${REGISTRY}/wordle-trackersupreme-migrator:${params.SHORT_HASH}
+                    docker pull ${REGISTRY}/wordle-trackersupreme-web:${params.IMAGE_TAG}
+                    docker pull ${REGISTRY}/wordle-trackersupreme-api:${params.IMAGE_TAG}
+                    docker pull ${REGISTRY}/wordle-trackersupreme-migrator:${params.IMAGE_TAG}
                 """
             }
         }
@@ -40,9 +61,9 @@ pipeline {
         stage('Tag Images') {
             steps {
                 sh """
-                    docker tag ${REGISTRY}/wordle-trackersupreme-web:${params.SHORT_HASH} ${REGISTRY}/wordle-trackersupreme-web:${TARGET_TAG}
-                    docker tag ${REGISTRY}/wordle-trackersupreme-api:${params.SHORT_HASH} ${REGISTRY}/wordle-trackersupreme-api:${TARGET_TAG}
-                    docker tag ${REGISTRY}/wordle-trackersupreme-migrator:${params.SHORT_HASH} ${REGISTRY}/wordle-trackersupreme-migrator:${TARGET_TAG}
+                    docker tag ${REGISTRY}/wordle-trackersupreme-web:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-web:${TARGET_TAG}
+                    docker tag ${REGISTRY}/wordle-trackersupreme-api:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-api:${TARGET_TAG}
+                    docker tag ${REGISTRY}/wordle-trackersupreme-migrator:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-migrator:${TARGET_TAG}
                 """
             }
         }
