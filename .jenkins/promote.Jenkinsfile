@@ -52,31 +52,34 @@ pipeline {
 
         stage('Pull Images') {
             steps {
-                sh """
-                    docker pull ${REGISTRY}/wordle-trackersupreme-web:${params.IMAGE_TAG}
-                    docker pull ${REGISTRY}/wordle-trackersupreme-api:${params.IMAGE_TAG}
-                    docker pull ${REGISTRY}/wordle-trackersupreme-migrator:${params.IMAGE_TAG}
-                """
+                for (img in IMAGES) {
+                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                    sh """
+                        docker pull ${IMAGE_PATH}:${params.IMAGE_TAG}
+                    """
+                }
             }
         }
 
         stage('Tag Images') {
             steps {
-                sh """
-                    docker tag ${REGISTRY}/wordle-trackersupreme-web:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-web:${TARGET_TAG}
-                    docker tag ${REGISTRY}/wordle-trackersupreme-api:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-api:${TARGET_TAG}
-                    docker tag ${REGISTRY}/wordle-trackersupreme-migrator:${params.IMAGE_TAG} ${REGISTRY}/wordle-trackersupreme-migrator:${TARGET_TAG}
-                """
+                for (img in IMAGES) {
+                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                    sh """
+                        docker tag ${IMAGE_PATH}:${params.IMAGE_TAG} ${IMAGE_PATH}:${TARGET_TAG}
+                    """
+                }
             }
         }
 
         stage('Push Promoted Tags') {
             steps {
-                sh """
-                    docker push ${REGISTRY}/wordle-trackersupreme-web:${TARGET_TAG}
-                    docker push ${REGISTRY}/wordle-trackersupreme-api:${TARGET_TAG}
-                    docker push ${REGISTRY}/wordle-trackersupreme-migrator:${TARGET_TAG}
-                """
+                for (img in IMAGES) {
+                    IMAGE_PATH = "${REGISTRY}/wordle-trackersupreme-${img}"
+                    sh """
+                        docker push ${IMAGE_PATH}:${TARGET_TAG}
+                    """
+                }
             }
         }
     }
