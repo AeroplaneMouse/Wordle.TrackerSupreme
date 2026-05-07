@@ -15,10 +15,24 @@ pipeline {
             }
         }
 
+        stage('Write build metadata') {
+            steps {
+                writeFile file: 'build.json', text: """
+                {
+                  "commit": "${env.GIT_COMMIT}",
+                  "imageTag": "${env.IMAGE_TAG}",
+                  "branch": "${env.GIT_BRANCH}",
+                  "buildNumber": "${env.BUILD_NUMBER}"
+                }
+                """
+                archiveArtifacts artifacts: 'build.json'
+            }
+        }
+
         stage('Set image tag') {
             steps {
                 script {
-                    env.IMAGE_TAG = env.GIT_COMMIT.take(7)
+                    env.IMAGE_TAG = env.GIT_COMMIT
                     echo "Using IMAGE_TAG=${env.IMAGE_TAG}"
                 }
             }
@@ -32,7 +46,7 @@ pipeline {
                             docker compose -f compose.build.yml \
                             --profile build-app build \
                             --build-arg COMMIT_SHA=${COMMIT_SHA} \
-                            --build-arg BUILD_NUMBER=${BUILD_ID} \
+                            --build-arg BUILD_ID=${BUILD_ID} \
                             --build-arg BUILD_URL=${BUILD_URL}
                         """
                     }
